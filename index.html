@@ -1,0 +1,405 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>Presentation OWASP</title>
+
+		<link rel="stylesheet" href="dist/reset.css">
+		<link rel="stylesheet" href="dist/reveal.css">
+		<link rel="stylesheet" href="dist/theme/black.css">
+
+		<!-- Theme used for syntax highlighted code -->
+		<link rel="stylesheet" href="plugin/highlight/monokai.css">
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section style="top: 0px; display: flex">
+					<img class="main-slide" src="https://owasp.org/Top10/assets/TOP_10_logo_Final_Logo_Colour.png" alt="">
+					<h3>Open Web Application Security Project (OWASP)</h3>
+				</section>
+				<section>
+					<ul>
+						<li>The OWASP Top 10 is one of the most popular projects: a list of the top 10 threats that modern web applications must protect against.</li>
+						<li>The goal of the Top 10 is it is meant to encourage organizations to change their software development cultures, so that they produce more secure code.</li>
+					</ul>
+				</section>
+				<section>
+					<p class="scheme-title">Changes in 10 main OWASP categories (Source: OWASP)</p>
+					<img class="image" src="http://www.igloosec.co.kr/files/2021/09/17/202109171512272aa533bd-5608-4a95-b6d6-e8e9bf5257d9.png" alt="">
+				</section>
+				<section>
+					<section>
+						<h3>A01:2021 Broken Access Control</h3>
+						<p>Access control vulnerabilities occur when users can act outside of their intended permissions. This typically leads to unauthorized access, information disclosure, and modification or destruction of data. These vulnerabilities arise from insecure coding or insecure implementation of authentication and authorization mechanisms.</p>
+					</section>
+					<section>
+						<p>Two common names for splitting access control vulnerabilities</p>
+						<img style="width: 400px;" src="./examples/assets/15.png" alt="">
+						<ol>
+							<li class="li">Horizontal Privilege Escalation: a user can perform an action or access data of another user with the same level of permissions.</li>
+							<li class="li">Vertical Privilege Escalation: a user can perform an action or access data that requires a level of access beyond their role</li>
+						</ol>
+					</section>
+					<section>
+						<h3 style="margin-bottom: 0;">Example:</h3>
+						<p class="text" style="text-align: left; margin-top: 0;">Horizontal Permission Issues: an attacker logs into a banking application using their own account details. When the attacker views their account, the browser makes a request to the web server for the account numbers balance and recent transactions.</p>
+						<div style="margin: 0;" class="risk">An attacker observes the following request made by the application when loading their banking dashboard.<br>
+							<pre style="width: 90%; margin: 0;"><code>
+								https://mybankingapp.test/cgi-bin/hpe.py?accountId=4462
+							</code></pre>
+						</div>
+						<div style="margin: 0;" class="risk">The attacker modifies the request to use the bank account number of another user by changing the accountID parameter from 4462 to 4463.<br>
+							<pre style="width: 90%;margin: 0;"><code>
+								https://mybankingapp.test/cgi-bin/hpe.py?accountId=4463
+							</code></pre>
+						</div>
+						<div style="margin: 0;" class="risk" >The applications response provides the attacker the account details of another person.<br>
+							<pre style="width: 90%; margin: 0;"><code>
+								{“AccountID”: 4463, “Balance”: “$167,183.09”}
+							</code></pre>
+						</div>
+					</section>
+					<section>
+						<h3>Facebook Business Pages (Aug 2015)</h3>
+					</section>
+					<section>
+						<pre><code data-trim data-noescape><script type="text/template">
+							Request : POST /<page_id>/userpermissions HTTP/1.1 
+							Host : graph.facebook.com<br>
+							Content-Length: 245 								
+							role=MANAGER&user=<target_user_id>&business=<associated_business_id>&
+								access_token=<application_access_token> 								
+							Response : true 
+							</script></code></pre>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h3>A02:2021 Cryptographic Failures</h3>
+						<p>Cryptographic failures appear when sensitive data is 
+							insufficiently protected and 
+							exposed to unauthorized audiences. Such failures are most 
+							common if data is transmitted or stored in clear text or using 
+							known-to-be-weak cryptographic algorithms.</p>
+					</section>
+					<section>
+						<ul>Possible attacks
+							<li>HTML5 Web Storage</li>
+							<li>Header attack</li>
+							<li>Transport layer</li>
+							<li>Encryption</li>
+						</ul>
+					</section>					
+					<section>
+						<h3>Insecure default configurations</h3>
+						<img src="https://cdn-media-1.freecodecamp.org/images/3-VGZNwxuYBBHi5dmH588z5M9lmD9YA9VlEb" alt="">
+						<p class="text">SSLv2 (Netscape Encryption Protocol) has long considered to be broken, and none of the clients today use it for secure connections. But researchers have found that out of 36 million HTTPS servers they probed, 6 million (about 17%) still supported SSLv2.</p>
+					</section>
+					<section>
+						<ul>Measures to prevent
+							<li>Using Transport Layer Security (TLS) 
+								when sending and receiving data from your users and 
+								the systems you operate.</li>
+							<li>Classify data processed, stored, or transmitted by an 
+								application, to understand what data you need to defend, and identify appropriate controls</li>
+							<li>Make sure to encrypt all data classified as "sensitive"</li>
+						</ul>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h3>A03:2021 Injection</h3>
+						<p>An attacker can gain access to sensitive data by injecting malicious data as part of a command or query. This usually happens when a website fails to filter, validate or sanitize users` inputs or implement parameterization.</p>
+					</section>
+					<section>
+						<ul>Possible attacks
+							<li>HTML</li>
+							<li>SQL</li>
+							<li>PHP</li>
+							<li>XML</li>
+							<li>and other</li>
+						</ul>
+					</section>
+					<section>
+						<h3>SQL injection</h3>
+						<p>Subverting application logic</p>
+						<div class="c2">
+							<form class="signup">
+							   <h2 class="signup1">SIGN UP</h2>
+							<input name="username" type="text" placeholder="Username*" class="username" value="wiener"/>
+							
+							<input name="email" type="text" placeholder="Email*" class="username" value="bluecheese"/>
+							   
+							<button class="btn">Sign Up</button>
+							</form>
+							</div>
+					</section>
+					<section>
+						<p>Еhe application requires data, executes the following SQL query:</p>
+						<pre><code data-trim data-noescape>
+							SELECT * FROM users WHERE username = 'wiener' 
+								AND password = 'bluecheese'
+						</code></pre>
+					</section>
+					<section>
+						<div class="c2">
+							<form class="signup">
+							   <h2 class="signup1">SIGN UP</h2>
+							<input name="username" type="text" placeholder="Username*" class="username" value="administrator'--"/>
+							
+							<input name="pasword" type="text" placeholder="password*" class="username" value=""/>
+							   
+							<button class="btn">Sign Up</button>
+							</form>
+							</div>
+							<pre><code data-trim data-noescape><script type="text/template">
+								SELECT * FROM users WHERE username = 'administrator'--'
+									AND password = ''
+							</script></code></pre>
+							<p class="text">The key thing here is that the double-dash sequence -- is a comment indicator in SQL, and means that the rest of the query is interpreted as a comment. This effectively removes the remainder of the query, so it no longer includes AND password = '' </p>
+					</section>
+					<section>
+						<p>This query returns the user whose username is administrator and successfully logs the attacker in as that user. </p>
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h3>A04:2021 Insecure Design </h3>
+						<p>Insecure design is a new entry on the OWASP Top 10 in 2021. It is different from insecure 
+							implementation in that it has more to do with risks related to design and architectural flaws. 
+							A secure implementation might have an insecure design which still renders a web application 
+							vulnerable to attacks</p>
+					</section>
+					<section>
+						<ul>Some remediation can help to protect the insecure design vulnerability such as:
+							<li>Follow OWASP top 10 approach while designing or implementing a new application. 
+								Secure design development lifecycle with the help of security professionals help to 
+								save from insecure design vulnerability. </li>
+							<li>Implementing the Security in the SDLC will help so we usually considers all the factors 
+								from threat modeling to vulnerability assessment in SDLC.</li>
+						</ul>
+					</section>
+				</section>
+					<section>
+						<section>
+							<h3>A05:2021 Security Misconfiguration</h3>
+							<img src="https://assets.website-files.com/5ff66329429d880392f6cba2/61386fda8de78f2d81fb4b38_Security%20Misconfiguration%20examples.png" alt="">
+							<p class="text">This category covers a brand range of potential vulnerabilities including insecure default
+								 configurations, incomplete configurations, and misconfigured HTTP headers, using insecure 
+								 default usernames and passwords, etc. </p>
+						</section>
+						<section>
+							<h3>SECURITY MISCONFIGURATION EXAMPLES:</h3>
+						</section>
+						<section>
+							<ol>
+								<li class="li">The app server admin console is automatically installed and not removed
+									<div class="risk">Risk:<br>
+										Attacker discovers the standard admin pages are on your server, logs in with default passwords, and takes over.</div>
+				
+									<li class="li">Directory listing is not disabled on your server
+									<div class="risk">Risk:<br>
+										Attacker discovers they can simply list directories to find any file. Attacker finds and downloads all your compiled Java classes, which they decompile and reverse engineer to get all your custom code. They then find a serious access control flaw in your application.</div>
+								
+								<li class="li">App server comes with sample applications that are not removed from your production server
+									<div class="risk">Risk:<br>
+										These sample applications have well-known security flaws attackers can use to compromise your server.</div>
+								</li>
+							</ol>
+						</section>
+					</section>
+
+					<section>
+						<section>
+							<h3>A06:2021 Vulnerable and Outdated Components</h3>
+							<p>This refers to known issues where vulnerabilities exist 
+								because the developers either don't know the versions of 
+								the components being used, including the versions of nested 
+								dependencies, or they don't know that the software being used 
+								is no longer supported or out of date.</p>
+						</section>
+						<section>
+							<img style="width: 500px" src="./examples/assets/6.png" alt="">
+							<ol>
+								<li class="li">In this case, an attacker tries to make a request to a website, and that request loads a page that contains the vulnerability.</li>
+								<li class="li">The website responds to the request which also discloses the vulnerable components. </li>
+								<li class="li">Once the attacker finds the vulnerable components and version, then he will go to Internet and searches for known vulnerabilities. </li>
+								<li class="li">It is easy to find risks associated with vulnerable components on the Internet, so attackers get information about how this risk can be exploited. </li>
+								<li class="li">Then attacker so goes and launches the attack with the website. </li>
+							</ol>
+						</section>
+						<section>
+							<h3>Examples of Using Components with Known Vulnerabilities in the world</h3>
+							<p class="text">Slack's career page was using an outdated Greenhouse JavaScript 
+								dependency which resulted in an HTTP parameter pollution vulnerability. This
+								would have allowed the loading of external Greenhouse forms (not owned by Slack).
+								We updated the Javascript and the issue is resolved. </p>
+						</section>
+					</section>
+					<section>
+						<section>
+							<h3>A07:2021 Identification and Authentication Failures</h3>
+							<img src="./examples/assets/11.jpg" alt="">
+							<p class="text">This happens thanks to reused passwords or weak credentials, 
+								such as missing multi-factor authentication methods or sticking with default settings.</p>
+						</section>
+						<section>
+							<h3>How does a password get hacked?</h3>
+								<p>1. Force attack:</p>
+								<p class="text" style="text-align: left;">This attack tries to guess every combination in the book until it hits on yours. 
+								The attacker automates software to try as many combinations as possible in as quick a 
+								time as possible. In 2012, an industrious hacker unveiled a 25-GPU cluster he had programmed 
+								to crack any 8-character Windows password containing uppercase and lowercase letters, numbers, 
+								and symbols in less than six hours. It has the ability to try 350 billion guesses per second. 
+								Generally, anything under 12 characters is vulnerable to being cracked.  
+								We learn from brute force attacks that password length is very important. The longer, the better.</p>	
+						</section>
+						<section>
+							<p>2. Dictionary attack:</p>
+							<p class="text" style="text-align: left;">The hacker is essentially attacking you with a dictionary. Whereas a brute force attack tries every combination of symbols, numbers, and letters, a dictionary attack tries a prearranged list of words such as you`d find in a dictionary.	
+							If your password is indeed a regular word, you`ll only survive a dictionary attack if your word is wildy uncommon or if you use multiple word phrases, like LaundryZebraTowelBlue. These multiple word phrase passwords outsmart a dictionary attack.</p>
+						</section>	
+						<section>
+							<p>3. Phishing:</p>
+							<p class="text" style="text-align: left;">That most loathsome of tactics — phishing — is when cybercriminals try to trick, intimidate, 
+							or pressure you through social engineering  doing what they want. A phishing email may tell you (falsely) 
+							that there’s something wrong with your credit card account. It will direct you to click a link, which 
+							takes you to a phony website built to resemble your credit card company. The scammers stand by with bated 
+							breath, hoping the ruse is working and that you’ll now enter your password. Once you do, they have it.</p>
+						</section>
+					</section>
+					<section>
+						<section>
+							<h3>A08:2021 Software and Data Integrity Failures</h3>
+							<img style="width: 400px;" src="./examples/assets/12.jpg" alt="">
+							<p class="text">This is the second new category in the Top 10 in 2021, and is related with the failure to verify the integrity of software 
+								updates and patches befor implementation on live applications and servers.</p>
+						</section>
+						<section>
+							<h3>The most high-profile example of this would be the SolarWinds cyber attack in 2020.</h3>
+							<p class="text" style="text-align: left;">SolarWinds, based in Texas, United States of America, provides a platform called “Onion” which helps companies, many of which are Fortune 500 companies and include government agencies such as the Pentagon, to manage their IT resources.
+								Hackers managed to hack into the “Onion” and added malicious code which was undetected. As a result, SolarWinds unwittingly sent out updates and patches with the malicious code to its customer base. These compromised updates/patches then created backdoors which the attackers then used to install more malware to spy on the affected companies and government agencies.</p>
+						</section>
+					</section>
+					<section>
+						<section>
+							<h3>A09:2021 Security Logging and Monitoring Failures</h3>
+							<img style="width: 400px;" src="./examples/assets/13.png" alt="">
+							<p>Logging and Monitoring these are important components to ensure that any suspicious activity can be detected in real time or diagnosed after the fact. </p>
+						</section>
+						<section>
+							<p>Security logging is recording information about what happens within your network. Each type of log provides different kinds of information. 
+
+								For example, a firewall log may record the source IP address of each packet sent or received by the device. Event logs record the date, time, and details of each event that occurs within the computer. Application logs record the name of the process that was running when the event occurred. </p>
+						</section>
+						<section>
+							<h3>Examples of Insufficient Logging and Monitoring Attacks</h3>
+							<p>The Stuxnet Worm Attack on Iran’s Nuclear Program</p>
+							<p class="text">The Stuxnet worm is a masterfully crafted Malware that attacks Supervisory Control and Data Acquisition (SCADA) systems. In 2010, the security team at the Iranian nuclear program discovered that the bug had been used to access critical weapons control systems.
+
+								On deeper analysis, the bug was found to be active since 2005 and was spread using infected USB drives. The hackers took advantage of poor logging and monitoring mechanisms to gain elevated access discreetly.</p>
+						</section>
+					</section>
+					<section>
+						<section>
+							<h3>A10:2021 Server-Side Request Forgery (SSRF)</h3>
+							<p class="text">SSRF stands for the Server Side Request Forgery. SSRF is a server site attack which leads to sensitive information disclosure from the back end server of application. In server site request forgery attacker send malicious packets to any Internet-facing webserver and this webserver sends packet to back end server running on the internal network on behalf of attacker. This vulnerability mostly found in the application those have facility to feed the URL for fetching data from the respective servers , also present in the application in which two or more servers from different hosts communicate with each other for information sharing.</p>
+						</section>
+						<section>
+							<p>Let’s explore the concept with help of example :</p>
+							<img style="width: 400px;" src="./examples/assets/14.png" alt="">
+							<p class="text">Attacker sends Crafted Packet A to the publicly available server, and to full-fill the users query public server sends request to the back end server with Packet B , as this request coming from the public server back end server would trust that Packet B coming from the internal network and accept he packet and send response.This is possible because the attacker make request on behalf of other servers. </p>
+						</section>
+						<section>
+							<h3>Types Of SSRF :</h3>
+							<p class="text">1. Blind SSRF: <br>
+								In a Blind SSRF,  attacker are not able to control the data of  packet B  that are sent to the application in a trusted internal network. Here attacker can control the IP address and ports of server. To exploit this type of SSRF we have to feed URL followed by the colon and port number, by observing responses and error messages from the server we can find the open and close ports of server.</li>
+							</p>
+							<div class="risk">Example:<br>
+								<pre style="width: 90%;"><code>
+									http://example.com:1337
+									http://example.com:9923
+									http://example.com:43
+									http://example.com:22
+								</code></pre>
+							</div>
+						</section>
+						<section>
+							<p class="text">2. Limited Response / Partial SSRF :<br>
+								In this type of SSRF we get limited response from the server like title of the page or got access to resources but can’t see the data. We can control only certain parts of packet B that arrive internal application this type of vulnerability can be used to read local system files such as /etc/config, /etc/hosts, etc/passwd and many others. By using file:// protocol we can read file on the system.In some cases  XXE injection ,DDos these type of vulnerability may useful be exploit Partial SSRF Vulnerability.</p>
+							<div class="risk">Example:<br>
+								<pre style="width: 90%;"><code>
+									file:///etc/hosts
+									file:///etc/config
+									file:///etc/passwd
+								</code></pre>
+							</div>
+							</section>
+							<section>
+								<p class="text">3. Full Response SSRF :
+									In Full SSRF we have complete control over the Packet B (shown in fig). Now we can access the services running of the internal network and find the vulnerabilities in internal network. In this type of SSRF we can use the protocols like file://, dict://, http://, gopher://, etc. here we have large scope of creating different request and exploit the internal network if any vulnerabilities are present. Full SSRF vulnerability may cause the application crash through buffer overflow, by sending large string in the request causes the buffer overflow.</p>
+								<div class="risk">Example:<br>
+									<pre style="width: 90%;"><code style="white-space: initial;">
+										http://192.168.1.8/BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
+									</code></pre>
+								</div>
+							</section>
+					</section>
+					
+				
+				<section>
+					<img class="question" src="./examples/assets/warn.png" alt="">
+					<p>KISS principle says:</p>
+				<p>avoid to complex solutions and over-optimizations. The code should be easily understandable by other devs and yourself.</p>
+					</section>
+					<section  data-markdown>
+						
+						<textarea data-template>
+							Example:
+							```
+							(4 >> 1) === (4 / 2)
+							```
+							The operation right shift >> 1 is effective but the clarity of the code is reduced
+						  </textarea>
+					</section>
+					<section>
+						<ul>Real life examples:
+						<li>overloading the interface with options that most users don't need.</li>
+						<li>connecting a huge library, but you need a couple of functions from it.</li>
+						</ul>
+					</section>
+					<section><h2>Conclusions</h2>
+					<ul>
+						<li>no need to implement additional functionality</li>
+						<li>no need to overload the interface with unnecessary options</li>
+						<li>has no reason to implement complex business logic</li>
+						<li>do not lay down the functions of reserve</li>
+					</ul>
+					</section>
+					<section><h3>In programming, as in many areas of life, you need to be able to stop in time</h3>
+						<img class="question" src="./examples/assets/like.png" alt="">
+					</section>
+			</div>
+		</div>
+
+		<script src="dist/reveal.js"></script>
+		<script src="plugin/notes/notes.js"></script>
+		<script src="plugin/markdown/markdown.js"></script>
+		<script src="plugin/highlight/highlight.js"></script>
+		<script>
+			// More info about initialization & config:
+			// - https://revealjs.com/initialization/
+			// - https://revealjs.com/config/
+			Reveal.initialize({
+				hash: true,
+
+				// Learn about plugins: https://revealjs.com/plugins/
+				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+			});
+		</script>
+	</body>
+</html>
